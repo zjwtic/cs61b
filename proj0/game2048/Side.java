@@ -22,6 +22,14 @@ public enum Side {
      *  to compute the result of tilting the board in any particular
      *  direction. */
 
+    /** 每个方向D的参数（COL0、ROW0、DCOL和DROW）的解释如下：
+     棋盘的标准方向将棋盘的顶部作为NORTH，行和列（请参见Model）从其左下角编号。考虑到棋盘朝向，使棋盘的D面离您最远。然后，
+     （COL0s，ROW0s）是重新定向的棋盘（其中s是棋盘大小）左下角的标准坐标，
+     如果（c，r）是重新定向的棋盘上某个方格的标准坐标，则（c+DCOL，r+DROW）是立即在重新定向的棋盘上方格的标准坐标。
+     通过使用下面的col()和row()方法从重新定向到标准坐标进行转换，可以安排使用完全相同的代码来计算在任何特定方向上倾斜棋盘的结果。*/
+
+
+
     NORTH(0, 0, 0, 1), EAST(0, 1, 1, 0), SOUTH(1, 1, 0, -1),
     WEST(1, 0, -1, 0);
 
@@ -31,6 +39,10 @@ public enum Side {
      *  by DROW and the colunn by DCOL.  (COL0, ROW0) are the row and
      *  column of the lower-left square when sitting at the board facing
      *  towards this Side. */
+
+    /** 从棋盘上任何一个方格出发，方向（DCOL，DROW）的一侧。这里，“方向（DCOL，DROW）
+     * ”的意思是，向该侧移动一个空间将行增加DROW，列增加DCOL。当面对这一侧时，
+     *（COL0，ROW0）是坐在棋盘上的左下角方格的行和列。*/
     Side(int col0, int row0, int dcol, int drow) {
         this.row0 = row0;
         this.col0 = col0;
@@ -53,6 +65,7 @@ public enum Side {
 
     /** Return the standard column number for square (C, R) on a board
      *  of size SIZE oriented with this Side on top. */
+    /**：返回大小为SIZE的棋盘上（C，R）方格的标准列号，该棋盘以此侧为顶部。*/
     public int col(int c, int r, int size) {
         return col0 * (size - 1) + c * drow + r * dcol;
     }
