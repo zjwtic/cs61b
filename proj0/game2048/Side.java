@@ -81,3 +81,8 @@ public enum Side {
     private int row0, col0, drow, dcol;
 
 };
+//         * * * * *       c 3   r 1   size  5     north 情况：3  1     south情况：4-3     4-1     ： 1  3
+//         *1 * * *
+//         * * * * *
+//         * * * * *
+//         * * * * *

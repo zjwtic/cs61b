@@ -1,7 +1,9 @@
 package game2048;
 
+import java.util.EmptyStackException;
 import java.util.Formatter;
 import java.util.Observable;
+import java.util.function.Predicate;
 
 
 /** The state of a game of 2048.
@@ -114,6 +116,239 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+
+//    my first code
+//        int arow=0;
+//        int acol=0;
+//        boolean merged[][]=new boolean[board.size()][board.size()];
+//        for (int i = 0; i < merged.length; i++) {
+//            for (int j = 0; j < merged.length; j++) {
+//                merged[i][j]=false;
+//            }
+//        }
+//switch (side) {
+//    case NORTH:case WEST: {
+//        for (int c = 0; c < board.size(); c++) {    //north   west
+//            for (int r = board.size() - 1; r >= 0; r--) {
+//                Tile tile = board.tile(c, r);
+//                if (tile != null) {
+//                    arow=0;
+//                    acol=0;
+//if (side==Side.NORTH) {
+//
+//    if (tile.row() != board.size() - 1 ) {
+//        if (board.tile(tile.col(), tile.row() + 1) == null||board.tile(tile.col(), tile.row() + 1)
+//                .value()==board.tile(tile.col(), tile.row() ) .value() ) {
+//            //it needs mov
+//            arow = 0;
+//            acol = 0;
+//            for (int r1 = tile.row() + 1; r1 <= board.size() - 1; r1++) {
+//
+//                if (board.tile(tile.col(), r1) != null) {
+//                    break;
+//                }
+//                arow++;
+//            }
+//            if (tile.row() + arow != board.size() - 1)
+//                if (board.tile(tile.col(), tile.row() + arow + 1).value() == board.tile(tile.col(), tile.row()).value()) {
+//                    arow++;
+//                }
+//
+//        }
+//
+//    }
+//}
+//else {
+//    if (tile.col()!= 0 ) {
+//        if (board.tile(tile.col() - 1, tile.row()) == null||board.tile(tile.col() - 1, tile.row())
+//                .value()==board.tile(tile.col(), tile.row() ) .value() ){
+//            //it needs mov
+//            acol = 0;
+//            arow = 0;
+//            for (int c1 = tile.col() - 1; c1 >= 0; c1--) {
+//
+//                if (board.tile(c1, tile.row()) != null) {
+//                    break;
+//                }
+//                acol--;
+//            }
+//            if (tile.col() + acol != 0)
+//                if (board.tile(tile.col() + acol - 1, tile.row()).value() == board.tile(tile.col(), tile.row()).value()) {
+//                    acol--;
+//                }
+//
+//        }
+//    }
+//
+//}
+//                    if(arow!=0||acol!=0) {
+//                        if(merged[tile.col() + acol][tile.row() + arow]) {
+//                            merged[tile.col() + acol][tile.row() + arow]=false;
+//                            switch (side){
+//                                case NORTH:arow--;break;
+//                                case WEST:acol++;break;
+//                            }
+//                        }
+//
+//                        if (board.move(tile.col() + acol, tile.row() + arow, tile)) {
+//                            merged[tile.col() + acol][tile.row() + arow] = true;
+//                            score += tile.value() * 2;
+//                        }
+//                        changed = true;
+//                    }
+//                }
+//            }
+//        }
+//        break;
+//    }
+//    case SOUTH:case EAST: {
+//        for (int c = board.size() - 1; c >= 0; c--) {    //sourth  east
+//            for (int r = 0; r < board.size(); r++) {
+//                Tile tile = board.tile(c, r);
+//                if (tile != null) {
+//                    arow=0;
+//                    acol=0;
+//                    if (side == Side.SOUTH) {
+//
+//                        if (tile.row() != 0 )
+//                           if (board.tile(tile.col(), tile.row() -1) == null||board.tile(tile.col(), tile.row() -1)
+//                                   .value()==board.tile(tile.col(), tile.row() ) .value()) {
+//                            //it needs mov
+//                            arow = 0;
+//                            acol=0;
+//                            for (int r1 = tile.row() -1; r1 >=0; r1--) {
+//
+//                                if (board.tile(tile.col(), r1) != null) {
+//                                    break;
+//                                }
+//                                arow--;
+//                            }
+//                            if(tile.row()+arow!=0)
+//                            if (board.tile(tile.col(), tile.row() + arow -1).value() == board.tile(tile.col(), tile.row()).value()) {
+//                                arow--;
+//                            }
+//
+//                        }
+//
+//                    } else {
+//                        if (tile.col() != board.size()-1 )
+//                               if(  board.tile(tile.col() + 1, tile.row()) == null|| board.tile(tile.col() + 1, tile.row())
+//                                       .value()==board.tile(tile.col(), tile.row() ) .value()) {
+//                            //it needs mov
+//                            acol = 0;
+//                            arow=0;
+//                            for (int c1 = tile.col() +1; c1<=board.size()-1; c1++) {
+//
+//                                if (board.tile(c1, tile.row()) != null) {
+//                                    break;
+//                                }
+//                                acol++;
+//                            }
+//                            if(tile.col()+acol!=board.size()-1)
+//                            if (board.tile(tile.col() + acol +1, tile.row()).value() == board.tile(tile.col(), tile.row()).value()) {
+//                                acol++;
+//                            }
+//
+//                        }
+//
+//                    }
+//                    if(arow!=0||acol!=0) {
+//                        if(merged[tile.col() + acol][tile.row() + arow]) {
+//                            merged[tile.col() + acol][tile.row() + arow]=false;
+//                            switch (side){
+//                                case SOUTH:arow++;break;
+//                                case EAST:acol--;break;
+//                            }
+//                        }
+//                        if(board.move(tile.col() + acol, tile.row() + arow, tile)){
+//                            score+=tile.value()*2;
+//                            merged[tile.col() + acol][tile.row() + arow]=true;
+//                        }
+//
+//                        changed=true;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//}
+
+
+//      my  second code
+        board.setViewingPerspective(side);
+        boolean[][] merged = new boolean[board.size()][board.size()];
+        for (int r = board.size() -2; r >= 0; r--) {  //第一行不要动
+           for (int c = 0; c < board.size(); c++) {
+                   Tile t= board.tile(c, r);   //记住我们这的c r 是改变方向的tile 位置
+                   if (t != null) {
+                   int  dr=r+1;
+                       while (dr<board.size()) {
+                           Tile temp = board.tile(c, dr);
+                           if (temp == null || temp.value() == t.value() && !merged[c][dr]) {  //如果可以移动  1  前面为null
+                               dr++;                                                             //  2 前面可合并以及为合并过
+                           } else {    //不能 说明多移动了
+                               dr--;
+                               break;
+                           }
+                       }
+                    if (dr==board.size())   //如果顶部为null或者多合并了  说明多移动了
+                        dr--;
+                    if (dr != r) {       // 如果发生了移动，设置changed
+                        changed = true;
+                    }
+                    // 如果发生了merge
+                    if (board.move(c, dr, t)) {
+                        merged[c][dr] = true;
+                        score += board.tile(c, dr).value();
+                    }
+                }
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
+
+//        others  code
+//        board.setViewingPerspective(side);
+//        boolean[][] merged = new boolean[board.size()][board.size()];
+//        for (int r = board.size() -2; r >= 0; r--) {  //第一行不要动
+//            for (int c = 0; c < board.size(); c++) {
+//                Tile t= board.tile(c, r);   //记住我们这的c r 是改变方向的tile 位置
+//                if (t != null) {
+////                     处理当前tile：判断是否需要move，需要move到哪里，是否merge？
+////                     向上移动，c不变，r加一
+//                    int dc = c, dr = r + 1;
+//                    while (dr < board.size()) {
+//                        Tile dt = board.tile(dc, dr);
+//                        if (dt != null) {
+//                            // 如果不应该移动到(dc,dr)，dr回退一格
+//                            if (merged[dc][dr] == true || dt.value() != t.value()) {
+//                                dr--;
+//                            }
+//                            break;
+//                        }
+//
+//                        if (dr == board.size()-1) {  //到最顶上了
+//                            break;
+//                        }
+//                        dr++;
+//                    }
+//
+//                    // 如果发生了移动，设置changed
+//                    if (dr != r) {
+//                        changed = true;
+//                    }
+//                    // 如果发生了merge
+//                    if (board.move(dc, dr, t)) {
+//                        merged[dc][dr] = true;
+//                        score += board.tile(dc, dr).value();
+//                    }
+//
+//
+//                }
+//            }
+//        }
+//        board.setViewingPerspective(Side.NORTH);
+
         checkGameOver();
         if (changed) {
             setChanged();
@@ -138,6 +373,10 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for (Tile tile : b) {
+            if(tile==null)
+                return true;
+        }
         return false;
     }
 
@@ -148,6 +387,12 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (Tile tile : b) {
+            if (tile != null)
+                if (tile.value() == MAX_PIECE) {
+                    return true;
+                }
+        }
         return false;
     }
 
@@ -159,7 +404,32 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
-        return false;
+        if (emptySpaceExists(b)) {
+            return true;
+        } else {
+            for (int c = 0; c < b.size(); c++) {
+                for (int r = 0; r < b.size(); r++) {
+                    if (c == b.size() - 1 && r == b.size() - 1) {
+                        return false;
+                    }
+                   else if (c == b.size() - 1) {
+                        if (b.tile(c, r).value() == b.tile(c, r + 1).value()) {
+                            return true;
+                        }
+                    }
+
+                  else   if (r == b.size() - 1) {
+                        if (b.tile(c, r).value() == b.tile(c + 1, r).value()) {
+                            return true;
+                        }
+                    }
+                  else   if (b.tile(c, r).value() == b.tile(c + 1, r).value() || b.tile(c, r).value() == b.tile(c, r + 1).value()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 
 

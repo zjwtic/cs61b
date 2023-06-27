@@ -58,6 +58,7 @@ public class Board implements Iterable<Tile> {
 
     /** Return the current Tile at (COL, ROW), when sitting with the board
      *  oriented so that SIDE is at the top (farthest) from you. */
+//    基于某个方向基准的具体位置
     private Tile vtile(int col, int row, Side side) {
         return values[side.col(col, row, size())][side.row(col, row, size())];
     }
@@ -85,6 +86,9 @@ public class Board implements Iterable<Tile> {
      *
      * Returns whether or not this move is a merge.
      * */
+    /** 将Tile TILE放在列COL，行ROW处，其中COL和ROW被视为相对于当前视角的坐标。 *
+     返回此移动是否为合并。
+     */
     public boolean move(int col, int row, Tile tile) {
         int pcol = viewPerspective.col(col, row, size()),
                 prow = viewPerspective.row(col, row, size());
@@ -93,7 +97,6 @@ public class Board implements Iterable<Tile> {
         }
         Tile tile1 = vtile(col, row, viewPerspective);
         values[tile.col()][tile.row()] = null;
-
         if (tile1 == null) {
             values[pcol][prow] = tile.move(pcol, prow);
             return false;
