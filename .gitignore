@@ -13,9 +13,7 @@
 *.log
 *.ctxt
 .mtj.tmp/
-#*.jar
-!/proj0/javalib
-!/proj0/**/*.jar
+*.jar
 *.war
 *.ear
 *.zip
@@ -71,7 +69,7 @@ spec/
 .mtj.tmp/
 
 # Package Files #
-#*.jar
+*.jar
 *.war
 *.ear
 
