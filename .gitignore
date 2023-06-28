@@ -14,10 +14,7 @@
 *.ctxt
 .mtj.tmp/
 *.jar
-!proj0/javalib
-!hamcrest-core-1.3.jar
-!junit-4.12.jar
-!ucb.jar
+!/proj0/javalib
 *.war
 *.ear
 *.zip
