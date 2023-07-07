@@ -1,8 +1,6 @@
 package deque;
 
 import java.util.Iterator;
-import java.util.Queue;
-
 public class LinkedListDeque <T>implements Deque<T>  ,Iterable<T>{
     class Node <T>{
         private T item;

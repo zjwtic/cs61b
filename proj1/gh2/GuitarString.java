@@ -1,11 +1,8 @@
 package gh2;
 
 // TODO: uncomment the following import once you're ready to start this portion
-import deque.ArrayDeque;
 import deque.Deque;
 import deque.LinkedListDeque;
-
-import java.nio.Buffer;
 // TODO: maybe more imports
 
 //Note: This file will not compile until you complete the Deque implementations

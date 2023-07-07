@@ -2,7 +2,6 @@ package deque;
 
 import org.junit.Test;
 
-import javax.swing.text.MaskFormatter;
 
 import java.util.Comparator;
 
