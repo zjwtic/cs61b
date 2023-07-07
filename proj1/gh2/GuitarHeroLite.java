@@ -14,7 +14,10 @@ public class GuitarHeroLite {
         GuitarString stringA = new GuitarString(CONCERT_A);
         GuitarString stringC = new GuitarString(CONCERT_C);
 
+
+
         while (true) {
+
 
             /* check if the user has typed a key; if so, process it */
             if (StdDraw.hasNextKeyTyped()) {
@@ -35,6 +38,7 @@ public class GuitarHeroLite {
             /* advance the simulation of each guitar string by one step */
             stringA.tic();
             stringC.tic();
+
         }
     }
 }
