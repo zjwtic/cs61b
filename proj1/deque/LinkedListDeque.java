@@ -123,18 +123,19 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         if (!isEmpty()) {
             size--;
             if (size == 0) {
-                Node<T> temp = head.next;
+                T temp = head.next.item;
                 head = new Node<T>(null, null, null);
                 head.prior = head;
                 head.next = head;
-                return temp.item;
+                return temp;
             } else {
                 Node<T> temp = head.next;
+                T returnnum=temp.item;
                 head.next.next.prior = head;
                 head.next = head.next.next;
                 temp.prior = null;
                 temp.next = null;
-                return temp.item;
+                return returnnum;
             }
         }
         return null;
@@ -145,18 +146,19 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         if (!isEmpty()) {
             size--;
             if (size == 0) {
-                Node<T> temp = head.next;
+                T temp = head.next.item;
                 head = new Node<T>(null, null, null);
                 head.prior = head;
                 head.next = head;
-                return temp.item;
+                return temp;
             } else {
                 Node<T> temp = head.prior;
+                T returnnum=temp.item;
                 head.prior.prior.next = null;
                 head.prior = head.prior.prior;
                 temp.prior = null;
                 temp.next = null;
-                return temp.item;
+                return returnnum;
             }
         }
         return null;
@@ -182,23 +184,25 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o == this)
-            return true;
-        if (o instanceof LinkedListDeque) {
-            @SuppressWarnings("unchecked")
-            LinkedListDeque<T> temp = (LinkedListDeque<T>) o;
-            if (size == temp.size()) {
-                for (int i = 0; i < size; i++) {
-                    if (get(i) != temp.get(i))
-                        return false;
-                }
-                return true;
-            }
-
         }
-        return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LinkedListDeque)) {
+            return false;
+        }
+        LinkedListDeque<?> lld = (LinkedListDeque<?>) o;
+        if (lld.size() != size) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (lld.get(i) != get(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 // two sentinels methods
 

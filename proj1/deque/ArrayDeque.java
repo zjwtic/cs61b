@@ -23,12 +23,12 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
    private int size;
   private   T []items;
     @SuppressWarnings("unchecked")
-    ArrayDeque(){
+   public ArrayDeque(){
         items=(T[])new Object[8];
         front=last=-1;
         size=0;
     }
-    ArrayDeque(T item){
+  public ArrayDeque(T item){
         this();
         items[0]=item;
         size=1;
