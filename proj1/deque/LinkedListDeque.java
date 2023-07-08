@@ -1,78 +1,87 @@
 package deque;
 
 import java.util.Iterator;
-public class LinkedListDeque <T>implements Deque<T>  ,Iterable<T>{
-    class Node <T>{
+
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
+    class Node<T> {
         private T item;
-        private  Node<T> prior;
-        private  Node<T> next;
+        private Node<T> prior;
+        private Node<T> next;
+
         Node() {
             item = null;
             prior = next = null;
         }
-        public Node(Node<T> prior,Node<T> next,T item){
-            this.prior=prior;
-            this.next=next;
-            this.item=item;
+
+        public Node(Node<T> prior, Node<T> next, T item) {
+            this.prior = prior;
+            this.next = next;
+            this.item = item;
         }
     }
-     class  LinkedListDequeIterator implements Iterator<T>{
-     private    Node<T> ptr;
 
-         LinkedListDequeIterator(){
-             ptr=head.next;
-         }
-         @Override
-         public boolean hasNext() {
-             return ptr!=null&&ptr!=head;
-         }
+    class LinkedListDequeIterator implements Iterator<T> {
+        private Node<T> ptr;
 
-         @Override
-         public T next() {
-            T item =  ptr.item;
+        LinkedListDequeIterator() {
+            ptr = head.next;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return ptr != null && ptr != head;
+        }
+
+        @Override
+        public T next() {
+            T item = ptr.item;
             ptr = ptr.next;
             return item;
 //
-         }
-     }
+        }
+    }
+
     private int size;
-    private Node <T>head;
+    private Node<T> head;
+
     //head.next 永远是first    head.piror 永远是last
-    public LinkedListDeque(){
-        size=0;
-        head=new Node(null,null,null);
-        head.prior=head;
-        head.next=head;
+    public LinkedListDeque() {
+        size = 0;
+        head = new Node(null, null, null);
+        head.prior = head;
+        head.next = head;
     }
-    public LinkedListDeque(T item){
-        size=1;
-        head=new Node(null,null,null);
-        Node<T> temp=new Node(head,null,item);
-        head.next=temp;
-        head.prior=temp;
+
+    public LinkedListDeque(T item) {
+        size = 1;
+        head = new Node(null, null, null);
+        Node<T> temp = new Node(head, null, item);
+        head.next = temp;
+        head.prior = temp;
     }
+
     public T getRecursive(int index) {
-        if (index<size){
-            return getRecursive(head.next,index);
+        if (index < size) {
+            return getRecursive(head.next, index);
         }
         return null;
     }
-    private T getRecursive(Node<T>start,int index) {
-        if (index==0){
+
+    private T getRecursive(Node<T> start, int index) {
+        if (index == 0) {
             return start.item;
         }
-        return getRecursive(start.next,index-1);
+        return getRecursive(start.next, index - 1);
     }
 
     @Override
     public void addFirst(T item) {
         size++;
-        if (size==1){
-            Node<T> temp=new Node(head,null,item);
-            head.next=temp;
-            head.prior=temp;
-        }
-        else {
+        if (size == 1) {
+            Node<T> temp = new Node(head, null, item);
+            head.next = temp;
+            head.prior = temp;
+        } else {
             Node<T> temp = new Node(head, head.next, item);
             head.next.prior = temp;
             head.next = temp;
@@ -82,18 +91,16 @@ public class LinkedListDeque <T>implements Deque<T>  ,Iterable<T>{
     @Override
     public void addLast(T item) {
         size++;
-        if (size==1){
-            Node<T> temp=new Node(head,null,item);
-            head.next=temp;
-            head.prior=temp;
-        }
-        else {
+        if (size == 1) {
+            Node<T> temp = new Node(head, null, item);
+            head.next = temp;
+            head.prior = temp;
+        } else {
             Node<T> temp = new Node(head.prior, null, item);
-            head.prior.next=temp;
-           head.prior=temp;
+            head.prior.next = temp;
+            head.prior = temp;
         }
     }
-
 
 
     @Override
@@ -104,10 +111,10 @@ public class LinkedListDeque <T>implements Deque<T>  ,Iterable<T>{
     @Override
     public void printDeque() {
         Node<T> temp = head.next;
-while (temp!=null){
-    System.out.print(temp.item+" ");
-    temp=temp.next;
-}
+        while (temp != null) {
+            System.out.print(temp.item + " ");
+            temp = temp.next;
+        }
         System.out.println();
     }
 
@@ -123,10 +130,10 @@ while (temp!=null){
                 return temp.item;
             } else {
                 Node<T> temp = head.next;
-          head.next.next.prior=head;
-                head.next=head.next.next;
-          temp.prior=null;
-          temp.next=null;
+                head.next.next.prior = head;
+                head.next = head.next.next;
+                temp.prior = null;
+                temp.next = null;
                 return temp.item;
             }
         }
@@ -145,10 +152,10 @@ while (temp!=null){
                 return temp.item;
             } else {
                 Node<T> temp = head.prior;
-               head.prior.prior.next=null;
-              head.prior=head.prior.prior;
-                temp.prior=null;
-                temp.next=null;
+                head.prior.prior.next = null;
+                head.prior = head.prior.prior;
+                temp.prior = null;
+                temp.next = null;
                 return temp.item;
             }
         }
@@ -157,12 +164,12 @@ while (temp!=null){
 
     @Override
     public T get(int index) {
-        if (index<size){
+        if (index < size) {
             Node<T> temp = head.next;
-            int i=0;
-            while (i!=index){
+            int i = 0;
+            while (i != index) {
                 i++;
-                temp=temp.next;
+                temp = temp.next;
             }
             return temp.item;
         }
@@ -171,25 +178,27 @@ while (temp!=null){
 
     @Override
     public Iterator<T> iterator() {
-        return new LinkedListDequeIterator() ;
+        return new LinkedListDequeIterator();
     }
-    public boolean equals(Object o) {
-    if (o==null)
-        return false;
-    if (o==this)
-        return true;
-    if (o instanceof LinkedListDeque){
-        LinkedListDeque<T>temp=(LinkedListDeque<T>) o;
-        if (size==temp.size()) {
-            for (int i = 0; i < size; i++) {
-                  if (get(i)!=temp.get(i))
-                      return false;
-            }
-            return true;
-        }
 
-    }
-    return false;
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (o == this)
+            return true;
+        if (o instanceof LinkedListDeque) {
+            @SuppressWarnings("unchecked")
+            LinkedListDeque<T> temp = (LinkedListDeque<T>) o;
+            if (size == temp.size()) {
+                for (int i = 0; i < size; i++) {
+                    if (get(i) != temp.get(i))
+                        return false;
+                }
+                return true;
+            }
+
+        }
+        return false;
     }
 // two sentinels methods
 

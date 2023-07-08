@@ -18,10 +18,11 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
            return item;
         }
     }
-    int front;
-    int last;
-    int size;
-    T []items;
+   private int front;
+   private int last;
+   private int size;
+  private   T []items;
+    @SuppressWarnings("unchecked")
     ArrayDeque(){
         items=(T[])new Object[8];
         front=last=-1;
@@ -55,6 +56,7 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
             items[front] = item;
             size++;
         }
+    @SuppressWarnings("unchecked")
     private  void resize(int occupation){
         T []temp=(T[]) new Object[occupation];
 //        if (front<last){
@@ -127,7 +129,7 @@ private void   checksize(){
      }
         System.out.println();
     }
-
+    @SuppressWarnings("unchecked")
     private void clean(){
         items=(T[])new Object[items.length];
         front=last=-1;
@@ -189,6 +191,7 @@ private void   checksize(){
         if (o==this)
             return true;
         if (o instanceof ArrayDeque){
+            @SuppressWarnings("unchecked")
             ArrayDeque<T>temp=(ArrayDeque<T>) o;
             if (size==temp.size()) {
                 for (int i = 0; i < size; i++) {
