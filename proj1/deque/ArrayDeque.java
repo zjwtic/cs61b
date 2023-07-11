@@ -10,6 +10,7 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
     /**
      * Creates an empty linked list deque
      */
+    //nextfirst的后一个永远是第一个     nextlast的前一个永远是最后一个
     public ArrayDeque() {
         size = 0;
         items = (T[]) new Object[8];
@@ -17,9 +18,8 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
         nextLast = 1;
     }
     public ArrayDeque(T item) {
+        this();
         size = 1;
-        items = (T[]) new Object[8];
-        nextFirst = 0;
         items[1]=item;
         nextLast = 2;
     }
@@ -33,38 +33,32 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
 
     protected void resize(int capacity) {
         T[] resized = (T[]) new Object[capacity];
-
         int index = addOne(nextFirst);
         for (int i = 0; i < size; i++) {
             resized[i] = items[index];
             index = addOne(index);
         }
-
         nextFirst = capacity - 1;
         nextLast = size;
         items = resized;
     }
-
-    protected void checkMul() {
+    protected void checksize() {
         if (size == items.length) {
             resize(size * 2);
+        }else {
+            int len = items.length;
+            if (len >= 16 && size < len / 4) {
+                resize(len / 4);
+            }
         }
     }
-
-    protected void checkDiv() {
-        int len = items.length;
-        if (len >= 16 && size < len / 4) {
-            resize(len / 4);
-        }
-    }
-
     /**
      * Adds an item of type T to the front of the deque.
      * You can assume that item is never null.
      */
     @Override
     public void addFirst(T item) {
-        checkMul();
+        checksize();
         items[nextFirst] = item;
         nextFirst = minusOne(nextFirst);
         size += 1;
@@ -76,7 +70,7 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
      */
     @Override
     public void addLast(T item) {
-        checkMul();
+        checksize();
         items[nextLast] = item;
         nextLast = addOne(nextLast);
         size += 1;
@@ -90,7 +84,6 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
     public int size() {
         return size;
     }
-
     /**
      * Prints the items in the deque from first to last, separated by a space.
      * Once all the items have been printed, print out a new line.
@@ -114,9 +107,7 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
         if (size == 0) {
             return null;
         }
-
-        checkDiv();
-
+        checksize();
         nextFirst = addOne(nextFirst);
         T item = items[nextFirst];
         items[nextFirst] = null;
@@ -133,14 +124,13 @@ public class ArrayDeque <T> implements Deque<T> ,Iterable<T>{
         if (size == 0) {
             return null;
         }
-        checkDiv();
+        checksize();
         nextLast = minusOne(nextLast);
         T item = items[nextLast];
         items[nextLast] = null;
         size -= 1;
         return item;
     }
-
     /**
      * Gets the item at the given index, where 0 is the front, 1 is the next item, and so forth.
      * If no such item exists, returns null.
