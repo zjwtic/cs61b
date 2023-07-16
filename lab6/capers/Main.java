@@ -1,6 +1,8 @@
 package capers;
 
 import java.io.File;
+import java.util.Arrays;
+
 
 import static capers.Utils.*;
 
@@ -52,10 +54,14 @@ public class Main {
             break;
         case "dog":
             validateNumArgs("dog", args, 4);
+            int age=Integer.parseInt(args[3]);
+            CapersRepository.makeDog(args[1],args[2],age);
             // TODO: make a dog
             break;
         case "birthday":
             validateNumArgs("birthday", args, 2);
+            text = args[1];
+            CapersRepository.celebrateBirthday(text);
             // TODO: celebrate this dog's birthday
             break;
         default:
