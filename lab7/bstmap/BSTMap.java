@@ -1,9 +1,6 @@
 package bstmap;
 
 
-import edu.neu.ccs.quick.QuickLinkedList;
-
-import java.net.IDN;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -26,7 +23,7 @@ private class Entry {
 //greater iterator
 private class BSTIterator implements Iterator<K>{
      private LinkedList<Entry> list;
-         BSTIterator(){
+       public   BSTIterator(){
              list=new LinkedList<>();
         list.addLast(tree);
          }
