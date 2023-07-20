@@ -1,8 +1,11 @@
 package bstmap;
 
 
+import edu.neu.ccs.quick.QuickLinkedList;
+
 import java.net.IDN;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,50 +17,71 @@ private class Entry {
     V value;
     Entry left;
     Entry right;
-   public Entry(K key ,V value ,Entry left,Entry right){
+   public Entry(K key ,V value ){
         this.key=key;
         this.value=value;
-        this.left=left;
-        this.right=right;
     }
 }
-private class BSTIterator implements Iterator<K>{
-       private Object[]items;
-         Entry ptr;
-         int num,total;
-         BSTIterator(){
-             ptr=tree;
-             num=0;
-             total=0;
-            items=new Object[size];
-            init();
 
-         }
-         private void init(){
-            init(ptr);
-         }
-         private void init(Entry entry){
-             if (entry==null){
-                 return;
-             }
-             init(entry.left);
-             items[num]=entry.key;
-             num+=1;
-             init(entry.right);
+//greater iterator
+private class BSTIterator implements Iterator<K>{
+     private LinkedList<Entry> list;
+         BSTIterator(){
+             list=new LinkedList<>();
+        list.addLast(tree);
          }
 
     @Override
     public boolean hasNext() {
-        return total!=num;
+        return !list.isEmpty();
     }
 
     @Override
     public K next() {
-             K item=(K)items[total];
-             total+=1;
-             return item;
+           Entry temp=list.removeFirst();
+           list.addLast(temp.left);
+           list.addLast(temp.right);
+           return temp.key;
     }
 }
+//my iterator
+//private class BSTIterator implements Iterator<K>{
+//       private Object[]items;
+//         Entry ptr;
+//         int num,total;
+//         BSTIterator(){
+//             ptr=tree;
+//             num=0;
+//             total=0;
+//            items=new Object[size];
+//            init();
+//
+//         }
+//         private void init(){
+//            init(ptr);
+//         }
+//         private void init(Entry entry){
+//             if (entry==null){
+//                 return;
+//             }
+//             init(entry.left);
+//             items[num]=entry.key;
+//             num+=1;
+//             init(entry.right);
+//         }
+//
+//    @Override
+//    public boolean hasNext() {
+//        return total!=num;
+//    }
+//
+//    @Override
+//    public K next() {
+//             K item=(K)items[total];
+//             total+=1;
+//             return item;
+//    }
+//}
     @Override
     public void clear() {
       tree=null;
@@ -66,34 +90,27 @@ private class BSTIterator implements Iterator<K>{
 
     @Override
     public boolean containsKey(K key) {
-    return containsKey(tree,key);
-    }
-    private boolean containsKey(Entry entry,K key) {
-        if (entry==null)
-            return false;
-        if (key.compareTo(entry.key)<0){
-            return containsKey(entry.left,key);
-        }
-        else if (key.compareTo(entry.key)>0){
-            return containsKey(entry.right,key);
-        }
-        return true;
+    return getentry(tree,key)!=null;
     }
 
     @Override
     public V get(K key) {
-      return get(tree,key);
+    Entry temp=getentry(tree,key);
+      return temp==null?null:temp.value;
     }
-    private V get(Entry entry,K key){
+    private Entry getentry(Entry entry,K key){
         if (entry==null)
             return null;
-        if (key.compareTo(entry.key)<0){
-            return get(entry.left,key);
+        int cmp=key.compareTo(entry.key);
+        if (cmp<0){
+            return getentry(entry.left,key);
         }
-        else if (key.compareTo(entry.key)>0){
-           return get(entry.right,key);
+        else if (cmp>0){
+           return getentry(entry.right,key);
         }
-        return entry.value;
+        else {
+            return entry;
+        }
     }
 
 
@@ -109,16 +126,16 @@ private class BSTIterator implements Iterator<K>{
     private  Entry  put(Entry entry,K key,V value){
     if (entry==null){
         size+=1;
-        return new Entry(key,value,null,null);
+        return new Entry(key,value);
     }
-       if (key.compareTo(entry.key)==0){
+        int cmp=key.compareTo(entry.key);
+       if (cmp==0){
                entry.value=value;
-               return entry;
            }
-       else if (key.compareTo(entry.key)<0){
+       else if (cmp<0){
           entry.left= put(entry.left,key,value);
         }
-        else if (key.compareTo(entry.key)>0){
+        else if (cmp>0){
            entry.right=put(entry.right,key,value);
         }
         return entry;
@@ -135,12 +152,18 @@ private class BSTIterator implements Iterator<K>{
             if (entry==null){
                 return null;
             }
-            keySet(set,entry.left);
             set.add(entry.key);
+            keySet(set,entry.left);
             keySet(set,entry.right);
             return set;
    }
-
+//greater remove
+        private Entry getmix(Entry temp){
+           if (temp.left==null){
+               return temp;
+           }
+       return getmix(temp.left);
+    }
     @Override
     public V remove(K key) {
         if (!containsKey(key))
@@ -150,47 +173,7 @@ private class BSTIterator implements Iterator<K>{
          size-=1;
          return item;
     }
-    private Entry remove(Entry entry,K key){
-        if (key.compareTo(entry.key)==0){
-            if (entry.right==null){
-               return entry.left;
-            }
-           else if (entry.left==null){
-                return entry.right;
-            }
-            Entry mix=getmix(entry.right);
-            Entry temp=entry;
-            entry=entry.right;
-            if (entry!=mix) {
-                while (entry.left != mix) {
-                    entry = entry.left;
-                }
-                entry.left = mix.right;
-                mix.left = temp.left;
-                mix.right = temp.right;
-            }
-            else {
-                mix.left = temp.left;
-            }
-            return mix;
-
-        }
-        else if (key.compareTo(entry.key)<0){
-            entry.left= remove(entry.left,key);
-        }
-        else if (key.compareTo(entry.key)>0){
-            entry.right=remove(entry.right,key);
-        }
-        return entry;
-    }
-    private Entry getmix(Entry temp){
-             Entry entry=temp;
-              while (entry.left!=null){
-                 entry= entry.left;
-              }
-              return entry;
-    }
-    @Override
+        @Override
     public V remove(K key, V value) {
         if (!containsKey(key)||!get(key).equals(value))
             return null;
@@ -199,6 +182,92 @@ private class BSTIterator implements Iterator<K>{
         size-=1;
         return item;
     }
+        private Entry remove(Entry entry,K key){
+         if (entry==null){
+          return null;
+          }
+            int cmp=key.compareTo(entry.key);
+         if (cmp<0){
+                entry.left= remove(entry.left,key);
+            }
+         else   if (cmp>0){
+                entry.right=remove(entry.right,key);
+            }
+        else {
+            if (entry.right==null){
+               return entry.left;
+            }
+           if (entry.left==null){
+                return entry.right;
+            }
+           Entry originentry=entry;
+            entry=getmix(entry.right);
+         entry.left=originentry.left;
+        entry.right=remove(originentry.right,entry.key);
+        }
+
+        return entry;
+    }
+
+        //my remove
+//    @Override
+//    public V remove(K key) {
+//        if (!containsKey(key))
+//            return null;
+//        V item=get(key);
+//       tree= remove(tree,key);
+//         size-=1;
+//         return item;
+//    }
+//    private Entry remove(Entry entry,K key){
+//        if (key.compareTo(entry.key)==0){
+//            if (entry.right==null){
+//               return entry.left;
+//            }
+//           else if (entry.left==null){
+//                return entry.right;
+//            }
+//            Entry mix=getmix(entry.right);
+//            Entry temp=entry;
+//            entry=entry.right;
+//            if (entry!=mix) {
+//                while (entry.left != mix) {
+//                    entry = entry.left;
+//                }
+//                entry.left = mix.right;
+//                mix.left = temp.left;
+//                mix.right = temp.right;
+//            }
+//            else {
+//                mix.left = temp.left;
+//            }
+//            return mix;
+//
+//        }
+//        else if (key.compareTo(entry.key)<0){
+//            entry.left= remove(entry.left,key);
+//        }
+//        else if (key.compareTo(entry.key)>0){
+//            entry.right=remove(entry.right,key);
+//        }
+//        return entry;
+//    }
+//    private Entry getmix(Entry temp){
+//             Entry entry=temp;
+//              while (entry.left!=null){
+//                 entry= entry.left;
+//              }
+//              return entry;
+//    }
+//    @Override
+//    public V remove(K key, V value) {
+//        if (!containsKey(key)||!get(key).equals(value))
+//            return null;
+//        V item=value;
+//       tree= remove(tree,key);
+//        size-=1;
+//        return item;
+//    }
 
     @Override
     public Iterator<K> iterator() {
@@ -213,8 +282,8 @@ private class BSTIterator implements Iterator<K>{
     if (entry==null){
         return;
     }
-    printInOrder(entry.left);
     System.out.print(entry.key+" ");
+    printInOrder(entry.left);
     printInOrder(entry.right);
     }
 }
