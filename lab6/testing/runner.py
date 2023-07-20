@@ -1,4 +1,5 @@
-import sys, re
+import sys, re,io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='gb18030')
 from subprocess import \
     check_output, PIPE, STDOUT, DEVNULL, CalledProcessError, TimeoutExpired
 from os.path import abspath, basename, dirname, exists, join, splitext, isdir
