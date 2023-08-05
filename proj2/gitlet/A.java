@@ -45,7 +45,8 @@ public class A {
 //        System.out.println(x.getAbsolutePath());
 //    String b=  Utils.readContentsAsString(x);
 //        System.out.println(b);
-
+String a="refs/heads/12";
+        System.out.println(a.replace("refs/heads/",""));
     }
 
 

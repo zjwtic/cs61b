@@ -50,6 +50,7 @@ public class Repository {
     public static final File refs = join(GITLET_DIR, "refs");
     public static final File heads = join(refs, "heads");
     public static final File master = join(heads, "master");
+    public static final String refsheads="refs/heads/";
     public static Stage addareas;
     public static Stage rmareas;
     public static TreeSet<Blob> workingdictory;
@@ -67,7 +68,7 @@ public class Repository {
         heads.mkdir();
         writeObject(stageaddareas,new Stage());
         writeObject(stagermareas,new Stage());
-        writeContents(head,"refs\\heads\\master");
+        writeContents(head,refsheads+"master");
         Commit commititem = new Commit("initial commit", new ArrayList<>(), new Date(0), new TreeMap<>());
         commititem.commit();
         writeContents(master,commititem.getCid());
@@ -396,8 +397,8 @@ private static TreeSet<Blob>  getcwdfile(){
         return commit;
     }
     private static String getcurrentcommit(){
-        String headcontent=readContentsAsString(head);
-        File file=join(Repository.GITLET_DIR,headcontent);
+        String branchname=readContentsAsString(head).replace(refsheads,"");
+        File file=join(Repository.heads,branchname);
         String currentcommit=readContentsAsString(file);
         return currentcommit;
     }
@@ -473,7 +474,7 @@ private static TreeMap<String,String>getchange(Commit base,TreeMap<String,String
         return delete;
     }
     private static void  changehead(String branchname){
-        writeContents(head,"refs\\heads\\"+branchname);
+        writeContents(head,refsheads+branchname);
     }
 
 }
