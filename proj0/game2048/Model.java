@@ -117,7 +117,7 @@ public class Model extends Observable {
         // changed local variable to true.
 
 
-//    my first code
+//    my first code  //shit code
 //        int arow=0;
 //        int acol=0;
 //        boolean merged[][]=new boolean[board.size()][board.size()];
