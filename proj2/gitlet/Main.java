@@ -48,6 +48,11 @@ public class Main {
                 TestIfGitExist();
                 Repository.globalog();
                 break;
+            case "status":
+                TestNumberIsTrue(args,1);
+                TestIfGitExist();
+                Repository.status();
+                break;
             case "find":
                 TestNumberIsTrue(args,2);
                 TestIfGitExist();
@@ -63,13 +68,43 @@ public class Main {
                 TestIfGitExist();
                 Repository.rmbranch(args[1]);
                 break;
+            case "checkout":
+                TestNumberIsTrue(args,2,3,4);
+                TestIfGitExist();
+               switch (args.length){
+                   case 2:
+                       Repository.branchcheckout(args[1]);
+                       break;
+                   case 3:
+                       checkcorrent(args[1],"--");
+                         Repository.checkoutfile(args[2]);
+                       break;
+                   case 4:
+                       checkcorrent(args[2],"--");
+                       Repository.checkoutcommitfile(args[1],args[3]);
+                       break;
+               }
+                break;
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);
         }
     }
-    private static void   TestNumberIsTrue(String[]args,int n){
-        if (args.length!=n){
+    private static void   TestNumberIsTrue(String[]args,int ...n){
+        boolean lengthtrue=false;
+        for (int i : n) {
+            if (args.length==i){
+                lengthtrue=true;
+                break;
+            }
+        }
+        if (!lengthtrue) {
+            System.out.println("Incorrect operands.");
+            System.exit(0);
+        }
+    }
+    private static void checkcorrent(String get,String need){
+        if (!get.equals(need)){
             System.out.println("Incorrect operands.");
             System.exit(0);
         }

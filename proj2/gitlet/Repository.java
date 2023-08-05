@@ -210,7 +210,7 @@ public class Repository {
             System.out.println("No changes added to the commit.");
             System.exit(0);
         }
-      if (message==null){
+      if (message.equals("")){
     System.out.println("Please enter a commit message.");
     System.exit(0);
        }
@@ -307,8 +307,53 @@ public static void branch(String branchname){
    restrictedDelete(join(heads,branchname));
     }
 
+//    Takes the version of the file as it exists in the head commit and puts it in the working directory,
+//    overwriting the version of the file that’s already there if there is one. The new version of the file is not staged.
+
+//Takes the version of the file as it exists in the commit with the given id, and puts it in the working directory,
+// overwriting the version of the file that’s already there if there is one. The new version of the file is not staged.
+
+//Takes all files in the commit at the head of the given branch, and puts them in the working directory,
+// overwriting the versions of the files that are already there if they exist. Also, at the end of this command, the given branch will now be considered the current branch (HEAD). Any files that are tracked in the current branch but are not present in the checked-out branch are deleted. The staging area is cleared, unless the checked-out branch is the current branch (see Failure cases below).
+
+    public static void checkoutfile(String filename){
+            String currentcommit=getcurrentcommit();
+            checkoutcommitfile(currentcommit,filename);
+    }
 
 
+    public static void checkoutcommitfile(String commitid,String filename){
+        if (!commitexist(commitid)) {
+            System.out.println("No commit with that id exists.");
+        }
+        Commit commit=getcommit(commitid);
+        String blobid=commit.getbid(filename);
+        if (blobid==null) {
+            System.out.println("File does not exist in that commit.");
+        }
+       create(filename,blobid);
+}
+ public static void branchcheckout(String branchname){
+if (!ifbranchexist(branchname)){
+    System.out.println("No such branch exists.");
+}
+if (ifheadinthisbranch(branchname)){
+    System.out.println("No need to checkout the current branch.");
+}
+Set<String> untrackedfile=getuntrackedfile();
+if (!untrackedfile.isEmpty()) {
+    System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+}
+Commit currentcommit =getheadpoint();
+String branchcontent=readContentsAsString(join(heads,branchname));
+Commit branchcommit=getcommit(branchcontent);
+TreeMap<String,String> changefile=getchange(currentcommit,branchcommit.getTree());
+TreeSet<String> deletefile=getdelete(currentcommit,branchcommit.getTree());
+    create(changefile);
+   delete(deletefile);
+   changehead(branchname);
+   initstage();
+ }
 
 
 
@@ -368,9 +413,67 @@ private static TreeSet<Blob>  getcwdfile(){
             treeMap.put(filename,id);
         }
     }
+    private static boolean commitexist(String commitid){
+        File commit=join(commitarea,commitid);
+        return commit.exists();
+    }
 private static void initstage(){
         writeObject(stageaddareas,new Stage());
         writeObject(stagermareas,new Stage());
 }
+private  static void create(String filename,String bid){
+         Blob blob=readObject(join(blobarea,bid),Blob.class);
+         writeContents(join(CWD,filename),blob.getContents());
+}
+    private  static void create(TreeMap<String,String> news){
+       Set<String> keys=news.keySet();
+        for (String key : keys) {
+            String bid =news.get(key);
+            create(key,bid);
+        }
+    }
+
+    private  static void delete(Set<String> deletes){
+        for (String delete : deletes) {
+            restrictedDelete(delete);
+        }
+    }
+private  static Set<String> getuntrackedfile(){
+        TreeSet<String>files=new TreeSet<>();
+    Commit currentcommit=getheadpoint();
+    workingdictory=getcwdfile();
+    for (Blob blob : workingdictory) {
+       if (!currentcommit.contain(blob)){
+            files.add(blob.getFilename());
+        }
+    }
+    return files;
+}
+
+private static TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news){
+        TreeMap<String,String>changes=new TreeMap<>();
+        Set<String>files=news.keySet();
+    for (String file : files) {
+       String bid=news.get(file);
+       if (!base.contain(file,bid)){
+           changes.put(file,bid);
+       }
+    }
+    return changes;
+}
+
+    private static TreeSet<String>getdelete(Commit base,TreeMap<String,String> news){
+        TreeSet<String>delete=new TreeSet<>();
+        Set<String>files=base.getTree().keySet();
+        for (String file : files) {
+            if (!news.containsKey(file)){
+                delete.add(file);
+            }
+        }
+        return delete;
+    }
+    private static void  changehead(String branchname){
+        writeContents(head,"refs\\heads\\"+branchname);
+    }
 
 }

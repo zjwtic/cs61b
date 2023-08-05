@@ -114,20 +114,35 @@ private TreeMap<String,String>tree ;
     }
     public boolean contain(Blob blob){
        String filename=blob.getFilename();
-        if (tree.containsKey(filename)){
-            if (tree.get(filename).equals(blob.getBid())){
-                return true;
-            }
+       String commitbid=getbid(filename);
+       if (commitbid==null){
+           return false;
+       }
+       if (!commitbid.equals(blob.getBid())){
+           return false;
+       }
+       return true;
+    }
+    public boolean contain(String filename ,String bid){
+        String commitbid=getbid(filename);
+        if (commitbid==null){
+            return false;
         }
-       return false;
+        if (!commitbid.equals(bid)){
+            return false;
+        }
+        return true;
     }
 
     public boolean contain(String filename){
-      return tree.containsKey(filename);
+      return getbid(filename)!=null;
     }
    public Set<String> getAllfile(){
        return tree.keySet();
     }
+public  String getbid(String filename){
+       return tree.get(filename);
+}
 
 //    public boolean contain(File file){
 //       return tree.containsKey(file);

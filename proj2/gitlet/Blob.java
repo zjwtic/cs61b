@@ -17,7 +17,6 @@ public  Blob(){
       contents=readContents(file);
       Bid=sha1(filename,contents);
     }
-
     public byte[] getContents() {
         return contents;
     }
@@ -49,4 +48,5 @@ public  Blob(){
     public void setFile(File file) {
         this.file = file;
     }
+
 }
