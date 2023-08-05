@@ -86,7 +86,7 @@ public class Repository {
 //simply put  we need add something that lastest commit didnt have
     public static void add(String filename) {
         File addfile=join(CWD,filename);
-        if (!addfile.exists()) {
+        if (!addfile.isFile()) {
             System.out.println("File does not exist.");
             System.exit(0);
         }
@@ -116,7 +116,7 @@ public class Repository {
 // has not already done so (do not remove it unless it is tracked in the current commit)
     public static void rm(String filename) {
         File removefile=join(CWD,filename);
-        if (!removefile.exists()) {
+        if (!removefile.isFile()) {
             System.out.println("No reason to remove the file.");
             System.exit(0);
         }
