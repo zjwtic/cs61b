@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 public class A {
     public static void main(String[] args) {
@@ -45,8 +46,15 @@ public class A {
 //        System.out.println(x.getAbsolutePath());
 //    String b=  Utils.readContentsAsString(x);
 //        System.out.println(b);
-String a="refs/heads/12";
-        System.out.println(a.replace("refs/heads/",""));
+
+        String tempcontent="<<<<<<< HEAD\n" +
+                "aaaaa"+"\n" +
+                "=======\n" +
+                "bbbbb"+"\n" +
+                ">>>>>>>";
+        byte[]temp=tempcontent.getBytes();
+        File file=Utils.join(Repository.CWD,"a");
+        Utils.writeContents(file,temp);
     }
 
 

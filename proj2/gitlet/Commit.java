@@ -55,7 +55,6 @@ private TreeMap<String,String>tree ;
            this.currentDate=date;
            timestamp=dateToTimeStamp(date);
          Cid=sha1(timestamp,message,parents.toString(),tree.toString());
-
     }
     private static String dateToTimeStamp(Date date) {
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
@@ -133,7 +132,9 @@ private TreeMap<String,String>tree ;
         }
         return true;
     }
-
+    public boolean ismodifed(String filename ,String bid){
+       return contain(filename)&&!contain(filename,bid);
+    }
     public boolean contain(String filename){
       return getbid(filename)!=null;
     }

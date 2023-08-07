@@ -25,8 +25,14 @@ public boolean contain(Blob blob){
 public  String remove(Blob blob){
    return storedareas.remove(blob.getFilename());
 }
+public String remove(String filename){
+    return storedareas.remove(filename);
+}
     public  void add(Blob blob){
             storedareas.put(blob.getFilename(),blob.getBid());
+    }
+    public void add(String filename,String bid){
+        storedareas.put(filename,bid);
     }
     public boolean isEmpty(){
     return storedareas.isEmpty();
