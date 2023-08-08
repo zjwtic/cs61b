@@ -13,14 +13,14 @@ public  Blob(){
 }
     public  Blob(String filename){
       this.filename=filename;
-      file=join( new File(System.getProperty("user.dir")),filename);
+      file=join(Repository.CWD,filename);
       contents=readContents(file);
       Bid=sha1(filename,contents);
     }
 
     public  Blob(String filename,byte[] contents){
         this.filename=filename;
-        file=join(new File(System.getProperty("user.dir")),filename);
+        file=join(Repository.CWD,filename);
        this.contents=contents;
         Bid=sha1(filename,contents);
     }

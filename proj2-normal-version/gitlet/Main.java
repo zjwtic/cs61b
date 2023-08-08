@@ -15,112 +15,86 @@ public class Main {
             System.exit(0);
         }
         String firstArg = args[0];
-        Repository reps=new Repository();
         switch(firstArg) {
             case "init":
                 TestNumberIsTrue(args,1);
-                reps.init();
+                Repository.init();
                 // TODO: handle the `init` command
                 break;
             case "add":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.add(args[1]);
+                TestIfGitExist();
+                Repository.add(args[1]);
                 // TODO: handle the `add [filename]` command
                 break;
             // TODO: FILL THE REST IN
             case "commit":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.commit(args[1]);
+                TestIfGitExist();
+                Repository.commit(args[1]);
                break;
             case "rm":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.rm(args[1]);
+                TestIfGitExist();
+                Repository.rm(args[1]);
                 break;
             case "log":
                 TestNumberIsTrue(args,1);
-                reps.TestIfGitExist();
-                reps.log();
+                TestIfGitExist();
+                Repository.log();
                 break;
             case "global-log":
                 TestNumberIsTrue(args,1);
-                reps. TestIfGitExist();
-                reps.globalog();
+                TestIfGitExist();
+                Repository.globalog();
                 break;
             case "status":
                 TestNumberIsTrue(args,1);
-                reps.TestIfGitExist();
-                reps.status();
+                TestIfGitExist();
+                Repository.status();
                 break;
             case "find":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.find(args[1]);
+                TestIfGitExist();
+                Repository.find(args[1]);
                 break;
             case "branch":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.branch(args[1]);
+                TestIfGitExist();
+                Repository.branch(args[1]);
                 break;
             case "rm-branch":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.rmbranch(args[1]);
+                TestIfGitExist();
+                Repository.rmbranch(args[1]);
                 break;
             case "checkout":
                 TestNumberIsTrue(args,2,3,4);
-                reps.TestIfGitExist();
+                TestIfGitExist();
                switch (args.length){
                    case 2:
-                       reps.branchcheckout(args[1]);
+                       Repository.branchcheckout(args[1]);
                        break;
                    case 3:
                        checkcorrent(args[1],"--");
-                       reps.checkoutfile(args[2]);
+                         Repository.checkoutfile(args[2]);
                        break;
                    case 4:
                        checkcorrent(args[2],"--");
-                       reps.checkoutcommitfile(args[1],args[3]);
+                       Repository.checkoutcommitfile(args[1],args[3]);
                        break;
                }
                 break;
 
             case "reset":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.reset(args[1]);
+                TestIfGitExist();
+                Repository.reset(args[1]);
                 break;
             case "merge":
                 TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.merge(args[1]);
-                break;
-            case "add-remote":
-                TestNumberIsTrue(args,3);
-                reps.TestIfGitExist();
-                reps.addremote(args[1],args[2]);
-                break;
-            case "rm-remote":
-                TestNumberIsTrue(args,2);
-                reps.TestIfGitExist();
-                reps.rmremote(args[1]);
-                break;
-            case "push":
-                TestNumberIsTrue(args,3);
-                reps.TestIfGitExist();
-                reps.push(args[1],args[2]);
-                break;
-            case "fetch":
-                TestNumberIsTrue(args,3);
-                reps.TestIfGitExist();
-                reps.fetch(args[1],args[2]);
-                break;
-            case "pull":
-                TestNumberIsTrue(args,3);
-                reps.TestIfGitExist();
-                reps.pull(args[1],args[2]);
+                TestIfGitExist();
+                Repository.merge(args[1]);
                 break;
             default:
                 System.out.println("No command with that name exists.");
@@ -146,5 +120,10 @@ public class Main {
             System.exit(0);
         }
     }
-
+    private static void   TestIfGitExist(){
+        if (!Repository.GITLET_DIR.exists()){
+            System.out.println("Not in an initialized Gitlet directory.");
+            System.exit(0);
+        }
+    }
 }

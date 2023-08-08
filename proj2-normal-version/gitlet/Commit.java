@@ -2,11 +2,12 @@ package gitlet;
 
 // TODO: any imports you need here
 
-import java.io.File;
+
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 import static gitlet.Utils.*;
 
 /*Represents a gitlet commit object.
@@ -59,8 +60,8 @@ private TreeMap<String,String>tree ;
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
         return dateFormat.format(date);
     }
-    public void commit(File commitplace){
-        writeObject( join(commitplace,Cid),this);
+    public void commit(){
+        writeObject( join(Repository.commitarea,Cid),this);
     }
 
     public String getMessage() {
@@ -144,6 +145,73 @@ public  String getbid(String filename){
        return tree.get(filename);
 }
 
-
-   /* TODO: fill in the rest of this class. */
+//    public boolean contain(File file){
+//       return tree.containsKey(file);
+//    }
+//    public void udpdatetree(Index stage){
+//       HashMap<File,String> add=stage.getAddfile();
+//       HashSet<File> remove=stage.getRemovefile();
+//        for (File file : remove) {
+//            tree.remove(file);
+//        }
+//        Set<File>temp =add.keySet();
+//        for (File file : temp) {
+//            String updatehash=add.get(file);
+//            tree.put(file,updatehash);
+//        }
+//    }
+//
+//public  String commit(){
+//       String content=String.format("Message:%s\nAuthor:%s\n",message,author);
+//       if (parent!=null){
+//           content+="Parent:"+parent;
+//       }
+//       content+="Tree:"+tree;
+//       content+="Date:"+timestamp;
+//      String commithash= Utils.sha1(content);
+//      writeObject( join(Repository.commitarea,commithash),this);
+//      return commithash;
+//}
+//
+//    public String getMessage() {
+//        return message;
+//    }
+//
+//    public void setMessage(String message) {
+//        this.message = message;
+//    }
+//
+//    public String getParent() {
+//        return parent;
+//    }
+//
+//    public void setParent(String parent) {
+//        this.parent = parent;
+//    }
+//
+//    public String getAuthor() {
+//        return author;
+//    }
+//
+//    public void setAuthor(String author) {
+//        this.author = author;
+//    }
+//
+//    public String getTimestamp() {
+//        return timestamp;
+//    }
+//
+//    public void setTimestamp(String timestamp) {
+//
+//        this.timestamp = timestamp;
+//    }
+//
+//    public HashMap<File, String> getTree() {
+//        return tree;
+//    }
+//
+//    public void setTree(HashMap<File, String> tree) {
+//        this.tree = tree;
+//    }
+//    /* TODO: fill in the rest of this class. */
 }

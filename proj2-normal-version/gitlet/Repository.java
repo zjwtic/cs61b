@@ -22,94 +22,57 @@ public class Repository {
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided two examples for you.
      */
-    public File CWD ;
- public Repository(){
-     CWD = new File(System.getProperty("user.dir"));
-     Initalize();
- }
-    public Repository(String path){
-        CWD = new File(path);
-        Initalize();
-    }
-private void Initalize(){
-  this.GITLET_DIR = join(CWD, ".gitlet");
-    this.STAGE_ADD_AREAS = join(GITLET_DIR, "addareas"); //store the lastest commit has not add ones
-    this. STAGE_RM_AREAS = join(GITLET_DIR, "rmareas"); //store the lastest commit has not rm ones
-    this.   OBJECTS = join(GITLET_DIR, "objects");
-    this.COMMITAREA = join(OBJECTS, "Commits");
-    this. BLOBAREA = join(OBJECTS, "Blobs");
-    this.  HEAD = join(GITLET_DIR, "HEAD");
-    this. REFS = join(GITLET_DIR, "refs");
-    this.HEADS = join(REFS, "heads");
-    this.REMOTE=join(REFS,"remotes");
-    this.MASTER = join(HEADS, "master");
-    this.CONFIG = join(GITLET_DIR, "config");
-
-}
 
     /**
      * The current working directory.
      */
-
+    public static final File CWD = new File(System.getProperty("user.dir"));
     /**
      * The .gitlet directory.
      */
-    public File GITLET_DIR ;
+    public static final File GITLET_DIR = join(CWD, ".gitlet");
     /**
      * stored areas
      */
-    public  File STAGE_ADD_AREAS ; //store the lastest commit has not add ones
-    public  File STAGE_RM_AREAS ; //store the lastest commit has not rm ones
+    public static final File stageaddareas = join(GITLET_DIR, "addareas"); //store the lastest commit has not add ones
+    public static final File stagermareas = join(GITLET_DIR, "rmareas"); //store the lastest commit has not rm ones
     /**
      * commit areas
      */
-    public  File OBJECTS ;
-    public  File COMMITAREA ;
+    public static final File objects = join(GITLET_DIR, "objects");
+    public static final File commitarea = join(objects, "Commits");
     /**
      * blob areas
      */
-    public File BLOBAREA ;
+    public static final File blobarea = join(objects, "Blobs");
     /**
      * head master pointer
      **/
-    public  File HEAD ;
-    public  File REFS ;
-    public  File HEADS ;
-    public  File MASTER ;
-
-    // config
-    public  File CONFIG ;
-    //remote
-    public File REMOTE;
-
-    public static final String REFS_HEADS ="refs/heads/";
-    public  Stage addareas;
-    public  Stage rmareas;
-    public  HashSet<Blob> workingdictory;
-    public  void   TestIfGitExist(){
-        if (!GITLET_DIR.exists()){
-            System.out.println("Not in an initialized Gitlet directory.");
-            System.exit(0);
-        }
-    }
-    public  void init() {
+    public static final File head = join(GITLET_DIR, "HEAD");
+    public static final File refs = join(GITLET_DIR, "refs");
+    public static final File heads = join(refs, "heads");
+    public static final File master = join(heads, "master");
+    public static final String refsheads="refs/heads/";
+    public static Stage addareas;
+    public static Stage rmareas;
+    public static HashSet<Blob> workingdictory;
+    public static void init() {
         if (GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory");
             System.exit(0);
         }
         GITLET_DIR.mkdir();
-        OBJECTS.mkdir();
-        COMMITAREA.mkdir();
-        BLOBAREA.mkdir();
-        REFS.mkdir();
-        HEADS.mkdir();
-        REMOTE.mkdir();
-        writeObject(STAGE_ADD_AREAS,new Stage());
-        writeObject(STAGE_RM_AREAS,new Stage());
-        writeContents(HEAD, REFS_HEADS +"master");
+        objects.mkdir();
+        commitarea.mkdir();
+        blobarea.mkdir();
+        refs.mkdir();
+        heads.mkdir();
+        writeObject(stageaddareas,new Stage());
+        writeObject(stagermareas,new Stage());
+        writeContents(head,refsheads+"master");
         Commit commititem = new Commit("initial commit", new ArrayList<>(), new Date(0), new TreeMap<>());
-        commititem.commit(COMMITAREA);
-        writeContents(MASTER,commititem.getCid());
+        commititem.commit();
+        writeContents(master,commititem.getCid());
     }
 
     /*
@@ -123,7 +86,7 @@ private void Initalize(){
      The file will no longer be staged for removal (see gitlet rm), if it was at the time of the command.
      */
 //simply put  we need add something that lastest commit didnt have
-    public  void add(String filename) {
+    public static void add(String filename) {
         File addfile=join(CWD,filename);
         if (!addfile.isFile()) {
             System.out.println("File does not exist.");
@@ -134,38 +97,38 @@ private void Initalize(){
 //     do not stage it to be added, and remove it from the staging area if it is already there
         Commit currentcommit = getheadpoint();
         if (currentcommit.contain(newblob)) {
-            rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+            rmareas=readObject(stagermareas,Stage.class);
             if (rmareas.contain(newblob)){
                 rmareas.remove(newblob);
-                writeObject(STAGE_RM_AREAS,rmareas);
+                writeObject(stagermareas,rmareas);
             }
             return;
         }
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
+        addareas=readObject(stageaddareas,Stage.class);
             if (addareas.contain(newblob)) {
                 return;
             }
          addareas.add(newblob);
-        writeObject(STAGE_ADD_AREAS,addareas);
-        writeObject(join(BLOBAREA,newblob.getBid()),newblob);  //update blob
+        writeObject(stageaddareas,addareas);
+        writeObject(join(blobarea,newblob.getBid()),newblob);  //update blob
     }
 //Unstage the file if it is currently staged for addition.
 // If the file is tracked in the current commit,
 // stage it for removal and remove the file from the working directory if the user
 // has not already done so (do not remove it unless it is tracked in the current commit)
-    public  void rm(String filename) {
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
+    public static void rm(String filename) {
+        addareas=readObject(stageaddareas,Stage.class);
         if (addareas.contain(filename)){                            //weng jian cun zai yu add qu zhong
             addareas.remove(filename);
-            writeObject(STAGE_ADD_AREAS,addareas);
+            writeObject(stageaddareas,addareas);
              return;
         }
         Commit currentcommit = getheadpoint();  //weng jian zai dang qian commit zhong
         String bid=currentcommit.getbid(filename);
         if (bid!=null) {
-            rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+            rmareas=readObject(stagermareas,Stage.class);
            rmareas.add(filename,bid);
-           writeObject(STAGE_RM_AREAS,rmareas);
+           writeObject(stagermareas,rmareas);
          restrictedDelete(join(CWD,filename));
             return;
         }
@@ -182,7 +145,7 @@ private void Initalize(){
 // This set of commit nodes is called the commit’s history.
 // For every node in this history, the information it should display is the commit id,
 // the time the commit was made, and the commit message. Here is an example of the exact format it should follow:
-    public  void log() {
+    public static void log() {
         String current=getcurrentcommit();
         Commit first=getheadpoint();
         while (!first.getParents().isEmpty()){
@@ -200,8 +163,8 @@ private void Initalize(){
         System.out.println("Date: "+first.getTimestamp()+"\n" +first.getMessage()+"\n");
 
     }
-    public  void globalog(){
-        List<String> commitList = plainFilenamesIn(COMMITAREA);
+    public static void globalog(){
+        List<String> commitList = plainFilenamesIn(commitarea);
         for (String filename : commitList) {
             Commit commit=getcommit(filename);
             System.out.println("===\ncommit "+commit.getCid());
@@ -218,8 +181,8 @@ private void Initalize(){
     // The commit message is a single operand; to indicate a multiword message,
     // put the operand in quotation marks, as for the commit command below. H
     // int: the hint for this command is the same as the one for global-log
-    public  void find(String message){
-        List<String> commitList = plainFilenamesIn(COMMITAREA);
+    public static void find(String message){
+        List<String> commitList = plainFilenamesIn(commitarea);
         List<String> messagematchcommits=new ArrayList<>();
         for (String filename : commitList) {
             Commit commit=getcommit(filename);
@@ -238,9 +201,9 @@ private void Initalize(){
     }
 
 //
-    public  void commit(String message) {
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
-        rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+    public static void commit(String message) {
+        addareas=readObject(stageaddareas,Stage.class);
+        rmareas=readObject(stagermareas,Stage.class);
         if (addareas.isEmpty()&&rmareas.isEmpty()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
@@ -256,21 +219,21 @@ private void Initalize(){
        TreeMap<String,String> currenttree=currentcommit.getTree();
         updatetree(currenttree,addareas,rmareas);
 Commit nowcommit=new Commit(message,parents,new Date(),currenttree);
-    nowcommit.commit(COMMITAREA);
+    nowcommit.commit();
 changecurrentbranch(nowcommit.getCid());
       initstage();
     }
     //Displays what branches currently exist,
     // and marks the current branch with a *. Also displays what files have been staged for addition or removal.
-    public  void status(){
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
-        rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+    public static void status(){
+        addareas=readObject(stageaddareas,Stage.class);
+        rmareas=readObject(stagermareas,Stage.class);
         Commit currentcommit=getheadpoint();
        TreeSet<String>   branchname =new TreeSet<>();
        TreeSet<String>   modifiedfilename =new TreeSet<>();
        TreeSet<String>   untrackedfilename =new TreeSet<>();
-      List<String>branchfiles=plainFilenamesIn(HEADS); //na dao suoyou  branch
-      String headponit=readContentsAsString(HEAD).replace(REFS_HEADS,"");  // dedao head suozhi branch
+      List<String>branchfiles=plainFilenamesIn(heads); //na dao suoyou  branch
+      String headponit=readContentsAsString(head).replace(refsheads,"");  // dedao head suozhi branch
         for (String branchfile : branchfiles) {
              if (branchfile.equals(headponit)){
                  branchname.add("*"+branchfile);
@@ -322,18 +285,18 @@ changecurrentbranch(nowcommit.getCid());
 //    A branch is nothing more than a name for a reference (a SHA-1 identifier) to a commit node.
 //    This command does NOT immediately switch to the newly created branch (just as in real Git).
 //    Before you ever call branch, your code should be running with a default branch called "master".
-public  void branch(String branchname){
+public static void branch(String branchname){
         if (ifbranchexist(branchname)){
             System.out.println("A branch with that name already exists.");
             System.exit(0);
         }
         String current =getcurrentcommit();
-        writeContents(join(HEADS,branchname),current);
+        writeContents(join(heads,branchname),current);
 }
 // Deletes the branch with the given name.
 // This only means to delete the pointer associated with the branch;
 // it does not mean to delete all commits that were created under the branch, or anything like that.
-    public  void rmbranch(String branchname){
+    public static void rmbranch(String branchname){
         if (!ifbranchexist(branchname)){
             System.out.println("A branch with that name does not exist.");
             System.exit(0);
@@ -342,7 +305,7 @@ public  void branch(String branchname){
     System.out.println("Cannot remove the current branch.");
        System.exit(0);
     }
-   join(HEADS,branchname).delete();
+   join(heads,branchname).delete();
     }
 
 //    Takes the version of the file as it exists in the head commit and puts it in the working directory,
@@ -354,11 +317,11 @@ public  void branch(String branchname){
 //Takes all files in the commit at the head of the given branch, and puts them in the working directory,
 // overwriting the versions of the files that are already there if they exist. Also, at the end of this command, the given branch will now be considered the current branch (HEAD). Any files that are tracked in the current branch but are not present in the checked-out branch are deleted. The staging area is cleared, unless the checked-out branch is the current branch (see Failure cases below).
 
-    public  void checkoutfile(String filename){
+    public static void checkoutfile(String filename){
             String currentcommit=getcurrentcommit();
             checkoutcommitfile(currentcommit,filename);
     }
-    public  void checkoutcommitfile(String commitid,String filename){
+    public static void checkoutcommitfile(String commitid,String filename){
         String id=commitid;
         if (commitid.length()>=6)
         id=checkifshortid(commitid);
@@ -374,8 +337,7 @@ public  void branch(String branchname){
         }
        create(filename,blobid);
 }
- public void branchcheckout(String branchname){
-      String  branchnamesepartor=branchname.replace("/",File.separator).replace("\\",File.separator);
+ public static void branchcheckout(String branchname){
 if (!ifbranchexist(branchname)){
     System.out.println("No such branch exists.");
     System.exit(0);
@@ -385,14 +347,7 @@ if (ifheadinthisbranch(branchname)){
     System.exit(0);
 }
 Commit currentcommit =getheadpoint();
-
-     String branchcontent;
-if (branchnamesepartor.contains(File.separator)){
-    branchcontent=readContentsAsString(join(REMOTE,branchnamesepartor));
-}
-else branchcontent=readContentsAsString(join(HEADS,branchnamesepartor));
-
-
+String branchcontent=readContentsAsString(join(heads,branchname));
 Commit branchcommit=getcommit(branchcontent);
 Set<String> untrackedfile=getuntrackedfile(currentcommit,branchcommit);
      if (!untrackedfile.isEmpty()) {
@@ -407,7 +362,7 @@ TreeSet<String> deletefile=getdelete(currentcommit,branchcommit.getTree());
    changehead(branchname);
    initstage();
  }
- public  void reset(String cid){
+ public static void reset(String cid){
         String id=cid;
      if (cid.length()>=6)
     id=checkifshortid(cid);
@@ -423,10 +378,9 @@ TreeSet<String> deletefile=getdelete(currentcommit,branchcommit.getTree());
  }
 //Merges files from the given branch into the current branch.
 // This method is a bit complicated, so here’s a more detailed description
-public  void merge(String branchname){
-    String  branchnamesepartor=branchname.replace("/",File.separator).replace("\\",File.separator);
-    addareas=readObject(STAGE_ADD_AREAS,Stage.class);
-    rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+public static void merge(String branchname){
+    addareas=readObject(stageaddareas,Stage.class);
+    rmareas=readObject(stagermareas,Stage.class);
     if (!addareas.isEmpty()||!rmareas.isEmpty()){
         System.out.println("You have uncommitted changes.");
         System.exit(0);
@@ -440,15 +394,8 @@ public  void merge(String branchname){
         System.exit(0);
     }
     Commit currentcommit=getheadpoint();
-
-    String branchcid;
-    if (branchnamesepartor.contains(File.separator)){             //if barnch is reomote branch
-        branchcid=readContentsAsString(join(REMOTE,branchnamesepartor));
-    }
-    else branchcid=readContentsAsString(join(HEADS,branchnamesepartor));
-
-
-    Commit branchcommit=readObject(join(COMMITAREA,branchcid),Commit.class);
+    String branchcid=readContentsAsString(join(heads,branchname));
+    Commit branchcommit=readObject(join(commitarea,branchcid),Commit.class);
     Set<String> untrackedfile=getuntrackedfile(currentcommit,branchcommit);
     if (!untrackedfile.isEmpty()) {
         System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
@@ -466,191 +413,49 @@ public  void merge(String branchname){
     }
 
 
+   File file=join(objects,basecommitcid);
+    String a="1";
+    if (file.isFile()){
+        a=readContentsAsString(file);
+        a+="2";
+    }
+    writeContents(join(objects,basecommitcid),a);
 
 
-    Commit basecommit=readObject(join(COMMITAREA,basecommitcid),Commit.class);
+
+
+    Commit basecommit=readObject(join(commitarea,basecommitcid),Commit.class);
     TreeMap<String,String> newtree=  mergefile(basecommit,currentcommit,branchcommit);
     List<String> parents=new ArrayList<>();
     parents.add(currentcommit.getCid());
     parents.add(branchcommit.getCid());
-    String currentbranch=readContentsAsString(HEAD).replace(REFS_HEADS,"");
-    String message="Merged "+branchname+" into "+currentbranch+".";   //this is not brancgsepator   for log need same barnchname
+    String currentbranch=readContentsAsString(head).replace(refsheads,"");
+    String message="Merged "+branchname+" into "+currentbranch+".";
     Commit news=new Commit(message, parents,new Date(),newtree);
-    news.commit(COMMITAREA);
+    news.commit();
    reset(news.getCid());
 }
 
-public  void addremote(String remotename,String remotepath){
-    File remotefile=join(REMOTE,remotename);
-    if (remotefile.isDirectory()){
-        System.out.println("A remote with that name already exists.");
-        System.exit(0);
-    }
-    remotefile.mkdir();
-    String configcontent="[remote \""+remotename+"\"]"+"\n";
-    String speartorpath=remotepath.replace("/",File.separator).replace("\\",File.separator);
-    configcontent+=speartorpath+"\n";
-    if (CONFIG.isFile()){
-        String confignowcontent=readContentsAsString(CONFIG);
-        configcontent=confignowcontent+configcontent;
-    }
-        writeContents(CONFIG,configcontent);
-}
-
-public  void rmremote(String remotename){
-    File remotefile=join(REMOTE,remotename);
-    if (!remotefile.isDirectory()){
-        System.out.println("A remote with that name does not exist.");
-        System.exit(0);
-    }
-    remotefile.delete();
-        String confignowcontent=readContentsAsString(CONFIG);
-        String remotecontent=getremotecontent(remotename);
-        confignowcontent=confignowcontent.replace(remotecontent+"\n","")
-                .replace("[remote \""+remotename+"\"]"+"\n","");
-        writeContents(CONFIG,confignowcontent);
-    }
 
 
-//Description: Attempts to append the current branch’s commits to the end of the given branch at the given remote. Details:
-//
-//This command only works if the remote branch’s head is in the history of the current local head,
-// which means that the local branch contains some commits in the future of the remote branch.
-// In this case, append the future commits to the remote branch.
-// Then, the remote should reset to the front of the appended commits (so its head will be the same as the local head).
-// This is called fast-forwarding
-public   void push(String remotename,String branchname){
-       File reomotepath=new File(getremotecontent(remotename));
-    Repository remote=new Repository(reomotepath.getParent());
-        if (!remote.GITLET_DIR.isDirectory()){
-            System.out.println("Remote directory not found.");
-            System.exit(0);
-        }
-        Commit currentcommit=getheadpoint();
-    LinkedList<String> currentheadlog=getcommitlog(currentcommit);
-//    String remotehead=readContentsAsString(remote.HEAD).replace(REFS_HEADS,"");
-//    Commit remotebranch=readObject(join(remote.HEADS+remotehead),Commit.class);
-    Commit remotebranch=remote.getheadpoint();
-    if (!currentheadlog.contains(remotebranch.getCid())){
-        System.out.println("Please pull down remote changes before pushing.");
-        System.exit(0);
-    }
-
-    File remoteBranch = join(remote.HEADS, branchname);
-    if (!remoteBranch.exists()) {
-        remote.branch(branchname);
-    }
-
-
-    LinkedList<String> remoteheadlog=remote.getcommitlog(remotebranch);
-    for (String s : currentheadlog) {
-        if (!remoteheadlog.contains(s)){
-            Commit commit=readObject(join(COMMITAREA,s),Commit.class);
-            writeObject(join(remote.COMMITAREA,commit.getCid()),commit);
-            Set<String>commitfilenames=commit.getAllfile();
-            for (String commitfilename : commitfilenames) {
-                String bid=commit.getbid(commitfilename);
-                Blob blob=readObject(join(BLOBAREA,bid),Blob.class);
-               File remoteblob=join(remote.BLOBAREA,blob.getBid());
-                if (!remoteblob.isFile()) {
-                    writeObject(remoteblob, blob);
-                }
-            }
-
-        }
-    }
-    remote.reset(currentcommit.getCid());
-}
-// Brings down commits from the remote Gitlet repository into the local Gitlet repository.
-// Basically, this copies all commits and blobs from the given branch in the remote repository
-// (that are not already in the current repository) into a branch named [remote name]/[remote branch name] in the local .
-// gitlet (just as in real Git), changing [remote name]/[remote branch name] to point to the head commit
-// (thus copying the contents of the branch from the remote repository to the current one).
-// This branch is created in the local repository if it did not previously exist.
-public void fetch(String remotename,String branchname){
-    File reomotepath=new File(getremotecontent(remotename));
-    Repository remote=new Repository(reomotepath.getParent());
-    if (!remote.GITLET_DIR.isDirectory()){
-        System.out.println("Remote directory not found.");
-        System.exit(0);
-    }
-    if (!remote.ifbranchexist(branchname)) {
-        System.out.println("That remote does not have that branch.");
-        System.exit(0);
-    }
-    String remotebranchppnint=readContentsAsString(join(remote.HEADS,branchname));
-    Commit remotecid=remote.getcommit(remotebranchppnint);
-    File branch = join(REMOTE, remotename, branchname);   //write the current  to the remote head
-    writeContents(branch, remotecid.getCid());
-
-
-    LinkedList<String> remotebranchlog=remote.getcommitlog(remotecid);
-    for (String cid : remotebranchlog) {
-        File currentcommits=join(COMMITAREA,cid);
-        if (currentcommits.isFile()){
-            continue;
-        }
-        Commit remotecommit=remote.getcommit(cid);
-        writeObject(currentcommits,remotecommit);
-
-        Set<String> reomoteblobs=remotecommit.getAllfile();
-        for (String blobfilename : reomoteblobs) {
-            String blobbid=remotecommit.getbid(blobfilename);
-
-            File currentblobs=join(BLOBAREA,blobbid);
-            if (currentblobs.isFile()){
-                continue;
-            }
-            Blob remoteblob=readObject(join(remote.BLOBAREA,blobbid),Blob.class);
-            writeObject(currentblobs,remoteblob);
-        }
-
-    }
-
-}
-public  void pull(String remotename,String branchname){
-fetch(remotename,branchname);
-merge(remotename+File.separator+branchname);
-}
-
-
-
-private    String getremotecontent(String remotename){
-    String confignowcontent=readContentsAsString(CONFIG);
-    String lines[] = confignowcontent.split("\\r?\\n");
-    int index=-1;
-    for (int i = 0; i < lines.length; i++) {
-        if (lines[i].equals("[remote \""+remotename+"\"]")){
-            index=i;
-            break;
-        }
-    }
-    if (index==-1){
-        System.out.println("A remote with that name does not exist.");
-        System.exit(0);
-    }
-    return lines[index+1];
-}
-
-private  boolean ifheadinthisbranch(String branchname){
-    String currentbranch=readContentsAsString(HEAD).replace(REFS_HEADS,"");
+private static boolean ifheadinthisbranch(String branchname){
+    String currentbranch=readContentsAsString(head).replace(refsheads,"");
     return branchname.equals(currentbranch);
 }
 
-private  boolean ifbranchexist(String branchname){
-        File currentbranch=join(HEADS,branchname);
-        File remotebranch=join(REMOTE,branchname);
-        return currentbranch.exists()||remotebranch.exists();
+private static boolean ifbranchexist(String branchname){
+        File branch=join(heads,branchname);
+        return branch.exists();
 }
 
-private   void  statusshow( Set<String> filenames,String message){
+private  static void  statusshow( Set<String> filenames,String message){
     System.out.println("=== "+message+" ===");
     for (String filename : filenames) {
         System.out.println(filename);
     }
     System.out.println();
 }
-private  HashSet<Blob>  getcwdfile(){
+private static HashSet<Blob>  getcwdfile(){
     List<String> filenames =plainFilenamesIn(CWD);
     HashSet<Blob> blobs=new HashSet<>();
     for (String filename : filenames) {
@@ -661,28 +466,22 @@ private  HashSet<Blob>  getcwdfile(){
 
 
     /* TODO: fill in the rest of this class. */
-    private Commit getheadpoint(){
+    private static Commit getheadpoint(){
         String currentcommit=getcurrentcommit();
         Commit commit=getcommit(currentcommit);
         return commit;
     }
-    private  Commit getcommit(String commithash){
-        Commit commit=readObject(join(COMMITAREA,commithash),Commit.class);
+    private static Commit getcommit(String commithash){
+        Commit commit=readObject(join(commitarea,commithash),Commit.class);
         return commit;
     }
-    private  String getcurrentcommit(){
-        String branchname=readContentsAsString(HEAD).replace(REFS_HEADS,"");
-        String branchnameseaprator=branchname.replace("/",File.separator).replace("\\",File.separator);
-
-        File file;
-        if (branchnameseaprator.contains(File.separator))
-            file=join(REMOTE,branchnameseaprator);
-       else   file=join(HEADS,branchnameseaprator);
-
+    private static String getcurrentcommit(){
+        String branchname=readContentsAsString(head).replace(refsheads,"");
+        File file=join(Repository.heads,branchname);
         String currentcommit=readContentsAsString(file);
         return currentcommit;
     }
-    private  void updatetree(TreeMap<String,String>treeMap,Stage addstage,Stage rmstage){
+    private static void updatetree(TreeMap<String,String>treeMap,Stage addstage,Stage rmstage){
         Set<String>add=addstage.KeySet();
         Set<String>rm=rmstage.KeySet();
         for (String filename : rm) {
@@ -694,19 +493,19 @@ private  HashSet<Blob>  getcwdfile(){
             treeMap.put(filename,id);
         }
     }
-    private  boolean commitexist(String commitid){
-        File commit=join(COMMITAREA,commitid);
+    private static boolean commitexist(String commitid){
+        File commit=join(commitarea,commitid);
         return commit.exists();
     }
-private  void initstage(){
-        writeObject(STAGE_ADD_AREAS,new Stage());
-        writeObject(STAGE_RM_AREAS,new Stage());
+private static void initstage(){
+        writeObject(stageaddareas,new Stage());
+        writeObject(stagermareas,new Stage());
 }
-private   void create(String filename,String bid){
-         Blob blob=readObject(join(BLOBAREA,bid),Blob.class);
+private  static void create(String filename,String bid){
+         Blob blob=readObject(join(blobarea,bid),Blob.class);
          writeContents(join(CWD,filename),blob.getContents());
 }
-    private  void create(TreeMap<String,String> news){
+    private  static void create(TreeMap<String,String> news){
        Set<String> keys=news.keySet();
         for (String key : keys) {
             String bid =news.get(key);
@@ -714,12 +513,12 @@ private   void create(String filename,String bid){
         }
     }
 
-    private  void delete(Set<String> deletes){
+    private  static void delete(Set<String> deletes){
         for (String delete : deletes) {
             restrictedDelete(delete);
         }
     }
-private   Set<String> getuntrackedfile(Commit currentcommit,Commit branchcommit){
+private  static Set<String> getuntrackedfile(Commit currentcommit,Commit branchcommit){
         TreeSet<String>files=new TreeSet<>();
          workingdictory=getcwdfile();
     for (Blob blob : workingdictory) {
@@ -730,7 +529,7 @@ private   Set<String> getuntrackedfile(Commit currentcommit,Commit branchcommit)
     return files;
 }
 
-private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news){
+private static TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news){
         TreeMap<String,String>changes=new TreeMap<>();
         Set<String>files=news.keySet();
     for (String file : files) {
@@ -742,7 +541,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
     return changes;
 }
 
-    private  TreeSet<String>getdelete(Commit base,TreeMap<String,String> news){
+    private static TreeSet<String>getdelete(Commit base,TreeMap<String,String> news){
         TreeSet<String>delete=new TreeSet<>();
         Set<String>files=base.getTree().keySet();
         for (String file : files) {
@@ -752,15 +551,14 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
         }
         return delete;
     }
-    private void  changehead(String branchname){
-        writeContents(HEAD, REFS_HEADS +branchname);
+    private static void  changehead(String branchname){
+        writeContents(head,refsheads+branchname);
     }
-    private  String  checkifshortid(String id){
+    private static String  checkifshortid(String id){
         String tempid=id;
-       List<String> commits=plainFilenamesIn(COMMITAREA);
+       List<String> commits=plainFilenamesIn(commitarea);
         for (String commit : commits) {
-            String ifshortid=commit.substring(0,tempid.length());
-            if (ifshortid.equals(tempid)){
+            if (commit.substring(0,tempid.length()).equals(tempid)){
                 tempid=commit;
                 break;
             }
@@ -768,7 +566,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
         return tempid;
     }
 
-    private  boolean ifcontainfilename(HashSet<Blob>base,String name){
+    private static boolean ifcontainfilename(HashSet<Blob>base,String name){
         for (Blob blob : base) {
             if (blob.getFilename().equals(name)){
                 return true;
@@ -776,12 +574,12 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
         }
         return false;
     }
-    private  String changecurrentbranch(String cid){
-        String nowbranch=readContentsAsString(HEAD).replace(REFS_HEADS,"");
-        writeContents(join(HEADS,nowbranch),cid);
+    private static String changecurrentbranch(String cid){
+        String nowbranch=readContentsAsString(head).replace(refsheads,"");
+        writeContents(join(heads,nowbranch),cid);
         return nowbranch;
     }
-    private  String getsplitpoint(Commit current,Commit mergebranch){
+    private static String getsplitpoint(Commit current,Commit mergebranch){
 //        LinkedList<String>currentcommitlog=getcommitlog(current);   //   normal  version  O(n)
 //        LinkedList<String>mergecommitlog=getcommitlog(mergebranch);
 //        String id=null;
@@ -822,7 +620,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
                   return branchCid;
               }
               if (!currentCid.equals("")){
-                  currentone=readObject(join(COMMITAREA,currentCid),Commit.class);
+                  currentone=readObject(join(commitarea,currentCid),Commit.class);
                   List<String> parents=currentone.getParents();
                   if (!parents.isEmpty()){
                       for (String parent : parents) {
@@ -831,7 +629,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
                   }
               }
                if (!branchCid.equals("")){
-                  branchone=readObject(join(COMMITAREA,branchCid),Commit.class);
+                  branchone=readObject(join(commitarea,branchCid),Commit.class);
                    List<String> parents=branchone.getParents();
                    if (!parents.isEmpty()){
                        for (String parent : parents) {
@@ -843,7 +641,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
            }
            return null;
     }
-    public  LinkedList<String> getcommitlog(Commit commit){
+    public static LinkedList<String> getcommitlog(Commit commit){
         Commit tempcommit=commit;
         LinkedList<String> temp=new LinkedList<>();
         LinkedList<String> tempqueue=new LinkedList<>();
@@ -851,7 +649,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
         while (!tempqueue.isEmpty()){
             String cid=tempqueue.removeFirst();
             temp.addLast(cid);
-            tempcommit=readObject(join(COMMITAREA,cid),Commit.class);
+            tempcommit=readObject(join(commitarea,cid),Commit.class);
             if (!tempcommit.getParents().isEmpty()){
                 List<String>parents=tempcommit.getParents();
                 for (String parent : parents) {
@@ -865,7 +663,7 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
 
     }
 
-    private  TreeMap<String,String> mergefile(Commit base,Commit current,Commit other){
+    private static TreeMap<String,String> mergefile(Commit base,Commit current,Commit other){
         TreeMap<String,String> newcommit=new TreeMap<>();
         Set<String> basekeys=base.getAllfile();
         for (String basekey : basekeys) {
@@ -933,17 +731,17 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
         }
         return newcommit;
     }
-    private  Blob getmergeconfictfile(String filename,String onebid,String twobid){
+    private static Blob getmergeconfictfile(String filename,String onebid,String twobid){
         String one="";
         String two="";
 
         if (onebid!=null)
     {
-        byte[] onecontent = readObject(join(BLOBAREA, onebid), Blob.class).getContents();
+        byte[] onecontent = readObject(join(blobarea, onebid), Blob.class).getContents();
         one = new String(onecontent);
     }
         if (twobid!=null) {
-            byte[] twocontent = readObject(join(BLOBAREA, twobid), Blob.class).getContents();
+            byte[] twocontent = readObject(join(blobarea, twobid), Blob.class).getContents();
             two = new String(twocontent);
         }
         String tempcontent="<<<<<<< HEAD\n" +
@@ -953,10 +751,12 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
                 ">>>>>>>"+"\n";
         byte[]newcontents=tempcontent.getBytes();
         Blob newblob=new Blob(filename,newcontents);
-        writeObject(join(BLOBAREA,newblob.getBid()),newblob);
+        writeObject(join(blobarea,newblob.getBid()),newblob);
         return newblob;
 
     }
+
+
 
 }
 
