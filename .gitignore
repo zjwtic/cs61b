@@ -13,7 +13,7 @@
 *.log
 *.ctxt
 .mtj.tmp/
-*.jar
+!*.jar
 *.war
 *.ear
 *.zip
@@ -69,7 +69,7 @@ spec/
 .mtj.tmp/
 
 # Package Files #
-*.jar
+!*.jar
 *.war
 *.ear
 
@@ -375,6 +375,7 @@ tramp
 !lab6/testing/our/*
 
 # Project 3 Image/Audio/Video Files
+!proj2/gitlet-design.md
 !proj3/**/*.png
 !proj3/**/*.jpeg
 !proj3/**/*.jpg
