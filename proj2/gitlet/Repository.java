@@ -814,7 +814,16 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
 //        }
 //        return id;
 
-//genius version   (even i dont  konw how to write   this by myself)   O(1)
+//greater version
+//  两个同时进行 bfs
+//先到 commit 0 点的就不做了
+//让另一个 接着去bfs
+//直到 找到对面的或者对面访问过的  那就是我们要的
+//我写的复杂了点，但想法差不多  其实只要设置访问过的就可以的了
+//不用contain  这样 currentids  mergebranchids 就都不需要了
+//
+//两个都从头bfs 判断此点是否访问过  访问过返回
+//反之 继续bfs 同时设置访问过
         Commit currentone=current;
         Commit branchone=mergebranch;
            HashSet<String> currentids=new HashSet<>();
