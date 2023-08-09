@@ -59,9 +59,6 @@ private TreeMap<String,String>tree ;
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
         return dateFormat.format(date);
     }
-    public void commit(File commitplace){
-        writeObject( join(commitplace,Cid),this);
-    }
 
     public String getMessage() {
         return message;

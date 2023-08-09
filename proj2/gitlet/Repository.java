@@ -108,9 +108,12 @@ private void Initalize(){
         writeObject(STAGE_RM_AREAS,new Stage());
         writeContents(HEAD, REFS_HEADS +"master");
         Commit commititem = new Commit("initial commit", new ArrayList<>(), new Date(0), new TreeMap<>());
-        commititem.commit(COMMITAREA);
-        writeContents(MASTER,commititem.getCid());
+       UpdateCommitAreas(commititem);
+       writeContents(MASTER,commititem.getCid());
     }
+private  void UpdateCommitAreas(Commit commititem){
+    writeObject( join(COMMITAREA,commititem.getCid()),commititem);
+}
 
     /*
     Adds a copy of the file as it currently exists to the staging area (see the description of the commit command).
@@ -123,57 +126,71 @@ private void Initalize(){
      The file will no longer be staged for removal (see gitlet rm), if it was at the time of the command.
      */
 //simply put  we need add something that lastest commit didnt have
+   private void readstage(){
+       rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+       addareas=readObject(STAGE_ADD_AREAS,Stage.class);
+   }
+   private  void Updatermareas(){
+       writeObject(STAGE_RM_AREAS,rmareas);
+   }
+    private  void Updateaddareas(){
+        writeObject(STAGE_ADD_AREAS,addareas);
+    }
+    private  void Updatestage(){
+        writeObject(STAGE_RM_AREAS,rmareas);
+        writeObject(STAGE_ADD_AREAS,addareas);
+    }
+
+    private  void UpdateBlobs(Blob newblob){
+        writeObject(join(BLOBAREA,newblob.getBid()),newblob);
+    }
     public  void add(String filename) {
         File addfile=join(CWD,filename);
         if (!addfile.isFile()) {
             System.out.println("File does not exist.");
             System.exit(0);
         }
-        Blob newblob=new Blob(filename);
+        Blob newblob=new Blob(filename,CWD);
 // check If the current working version of the file is identical to the version in the current commit,
 //     do not stage it to be added, and remove it from the staging area if it is already there
         Commit currentcommit = getheadpoint();
+        readstage();
         if (currentcommit.contain(newblob)) {
-            rmareas=readObject(STAGE_RM_AREAS,Stage.class);
             if (rmareas.contain(newblob)){
                 rmareas.remove(newblob);
-                writeObject(STAGE_RM_AREAS,rmareas);
+               Updatermareas();
             }
             return;
         }
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
             if (addareas.contain(newblob)) {
                 return;
             }
          addareas.add(newblob);
-        writeObject(STAGE_ADD_AREAS,addareas);
-        writeObject(join(BLOBAREA,newblob.getBid()),newblob);  //update blob
+       Updateaddareas();
+        UpdateBlobs(newblob); //update blob
     }
 //Unstage the file if it is currently staged for addition.
 // If the file is tracked in the current commit,
 // stage it for removal and remove the file from the working directory if the user
 // has not already done so (do not remove it unless it is tracked in the current commit)
     public  void rm(String filename) {
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
+        readstage();
         if (addareas.contain(filename)){                            //weng jian cun zai yu add qu zhong
             addareas.remove(filename);
-            writeObject(STAGE_ADD_AREAS,addareas);
+           Updateaddareas();
              return;
         }
         Commit currentcommit = getheadpoint();  //weng jian zai dang qian commit zhong
         String bid=currentcommit.getbid(filename);
         if (bid!=null) {
-            rmareas=readObject(STAGE_RM_AREAS,Stage.class);
            rmareas.add(filename,bid);
-           writeObject(STAGE_RM_AREAS,rmareas);
+          Updatermareas();
          restrictedDelete(join(CWD,filename));
             return;
         }
 
         System.out.println("No reason to remove the file.");
         System.exit(0);
-
-
     }
 //Starting at the current head commit, display information about each commit
 // backwards along the commit tree until the initial commit, following the first parent commit links,
@@ -239,8 +256,7 @@ private void Initalize(){
 
 //
     public  void commit(String message) {
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
-        rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+       readstage();
         if (addareas.isEmpty()&&rmareas.isEmpty()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
@@ -256,15 +272,14 @@ private void Initalize(){
        TreeMap<String,String> currenttree=currentcommit.getTree();
         updatetree(currenttree,addareas,rmareas);
 Commit nowcommit=new Commit(message,parents,new Date(),currenttree);
-    nowcommit.commit(COMMITAREA);
+    UpdateCommitAreas(nowcommit);
 changecurrentbranch(nowcommit.getCid());
       initstage();
     }
     //Displays what branches currently exist,
     // and marks the current branch with a *. Also displays what files have been staged for addition or removal.
     public  void status(){
-        addareas=readObject(STAGE_ADD_AREAS,Stage.class);
-        rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+       readstage();
         Commit currentcommit=getheadpoint();
        TreeSet<String>   branchname =new TreeSet<>();
        TreeSet<String>   modifiedfilename =new TreeSet<>();
@@ -277,7 +292,7 @@ changecurrentbranch(nowcommit.getCid());
              }
            else branchname.add(branchfile);
         }
-        workingdictory=getcwdfile();
+     GetCWDfile();
         for (Blob blob : workingdictory) {
             if (currentcommit.contain(blob.getFilename())&&!addareas.contain(blob)){
                    if (!currentcommit.contain(blob)){
@@ -315,6 +330,12 @@ changecurrentbranch(nowcommit.getCid());
     statusshow(rmareas.KeySet(),"Removed Files");
     statusshow(modifiedfilename,"Modifications Not Staged For Commit");
     statusshow(untrackedfilename,"Untracked Files");
+    }
+
+
+
+    private void GetCWDfile(){
+        workingdictory=getcwdfile();
     }
 
 //    Creates a new branch with the given name,
@@ -425,8 +446,7 @@ TreeSet<String> deletefile=getdelete(currentcommit,branchcommit.getTree());
 // This method is a bit complicated, so here’s a more detailed description
 public  void merge(String branchname){
     String  branchnamesepartor=branchname.replace("/",File.separator).replace("\\",File.separator);
-    addareas=readObject(STAGE_ADD_AREAS,Stage.class);
-    rmareas=readObject(STAGE_RM_AREAS,Stage.class);
+   readstage();
     if (!addareas.isEmpty()||!rmareas.isEmpty()){
         System.out.println("You have uncommitted changes.");
         System.exit(0);
@@ -476,7 +496,7 @@ public  void merge(String branchname){
     String currentbranch=readContentsAsString(HEAD).replace(REFS_HEADS,"");
     String message="Merged "+branchname+" into "+currentbranch+".";   //this is not brancgsepator   for log need same barnchname
     Commit news=new Commit(message, parents,new Date(),newtree);
-    news.commit(COMMITAREA);
+    UpdateCommitAreas(news);
    reset(news.getCid());
 }
 
@@ -654,7 +674,7 @@ private  HashSet<Blob>  getcwdfile(){
     List<String> filenames =plainFilenamesIn(CWD);
     HashSet<Blob> blobs=new HashSet<>();
     for (String filename : filenames) {
-        blobs.add(new Blob(filename));
+        blobs.add(new Blob(filename,CWD));
     }
     return blobs;
 }
@@ -952,10 +972,9 @@ private  TreeMap<String,String>getchange(Commit base,TreeMap<String,String> news
                 two+
                 ">>>>>>>"+"\n";
         byte[]newcontents=tempcontent.getBytes();
-        Blob newblob=new Blob(filename,newcontents);
+        Blob newblob=new Blob(filename,newcontents,CWD);
         writeObject(join(BLOBAREA,newblob.getBid()),newblob);
         return newblob;
-
     }
 
 }

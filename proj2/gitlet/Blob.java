@@ -11,16 +11,16 @@ private File file;
 public  Blob(){
 
 }
-    public  Blob(String filename){
+    public  Blob(String filename,File CWD){
       this.filename=filename;
-      file=join( new File(System.getProperty("user.dir")),filename);
+      file=join(CWD,filename);
       contents=readContents(file);
       Bid=sha1(filename,contents);
     }
 
-    public  Blob(String filename,byte[] contents){
+    public  Blob(String filename,byte[] contents,File CWD){
         this.filename=filename;
-        file=join(new File(System.getProperty("user.dir")),filename);
+        file=join(CWD,filename);
        this.contents=contents;
         Bid=sha1(filename,contents);
     }

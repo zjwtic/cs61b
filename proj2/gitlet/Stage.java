@@ -18,6 +18,17 @@ public boolean contain(Blob blob){
     }
     return true;
 }
+
+    public boolean contain(String blobfilename,String bid){
+        String id=get(blobfilename);
+        if (id==null){
+            return false;
+        }
+        if (!id.equals(bid)){
+            return false;
+        }
+        return true;
+    }
     public boolean contain(String  filename){
         String id=get(filename);
         return id!=null;
@@ -28,6 +39,9 @@ public  String remove(Blob blob){
 public String remove(String filename){
     return storedareas.remove(filename);
 }
+public boolean ismodifed(String filename ,String bid){
+        return contain(filename)&&!contain(filename,bid);
+    }
     public  void add(Blob blob){
             storedareas.put(blob.getFilename(),blob.getBid());
     }
